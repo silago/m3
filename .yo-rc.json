@@ -1,0 +1,7 @@
+{
+  "generator-phaser": {
+    "projectName": "match3",
+    "esVersion": 6,
+    "gameFolder": "boilerplate"
+  }
+}
