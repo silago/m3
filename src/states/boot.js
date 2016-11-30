@@ -6,7 +6,7 @@ class Boot extends Phaser.State {
 
   preload() {
     this.load.image('preloader', 'assets/preloader.gif');
-    this.load.spritesheet('gems', 'assets/gems.png',100,100,3);
+    this.load.spritesheet('gems', 'assets/gems.png',50,50,3);
   }
 
   create() {
