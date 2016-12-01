@@ -1,6 +1,7 @@
 class MatchPhaserGrid extends jMatch3.Grid {
     constructor(game,options) {
         super(options);
+        this.fall_speed = 500;
         this.parent = jMatch3.Grid;
         this.types = options.types;
         this.game = game;
@@ -20,22 +21,27 @@ class MatchPhaserGrid extends jMatch3.Grid {
               return this.fallPieces();
         });
     }
-
-    updateScore(i) {
-        this.score+=i;
+   
+    updateHud() {
         this.label.text=this.score;
+    }
+    updateScore(i) {
+        if (i)  {
+            this.score+=i;
+        }
     }
     fallPieces() {
         return new Promise((resolve,reject)=>{
            var updated = false;
-                this.forEachMatchAxis((m)=>{
-                this.updateScore(m[0].object.score*m.length);
-               updated = true;
-               m.forEach((i) => {
-                i._clear();
-               });
-           }); 
+                this.getAxisMatches().forEach((m)=>{
+                    this.updateScore(m[0].object.score*m.length);
+                    updated = true;
+                    m.forEach((i) => {
+                        i._clear();
+                    });
+               }); 
            if (updated) {
+               this.updateHud();
                var _ = [].concat( 
                    this.applyGravity(),
                    );
@@ -86,7 +92,7 @@ class MatchPhaserGrid extends jMatch3.Grid {
             return new Promise((resolve,reject) => {
                 let t = this.game.add.tween(
                     piece.object.image
-                ).to(target,200);
+                ).to(target,this.fall_speed);
                 t.frameBased = false;
                 t.onComplete.add(()=>{
                     piece.object.image.events.onInputDown.removeAll();
@@ -110,8 +116,10 @@ class MatchPhaserGrid extends jMatch3.Grid {
             //console.log(piece);
             var type_index = Math.floor(Math.random() * this.types.length);
             piece._clear = function() {
-                this.object.image.destroy();
-                this.object.image = null; 
+                if (typeof this.object.image != 'undefined') {
+                    this.object.image.destroy();
+                    this.object.image = null; 
+                }
                 this.clear();
             }
             piece.object = {
@@ -130,7 +138,7 @@ class MatchPhaserGrid extends jMatch3.Grid {
     }
 
 
-    forEachMatchAxis(callback) {
+    getAxisMatches(callback) {
         //this.forEachMatch(callback);
         //return;
         var save_directions = this.parent.directions;
@@ -153,19 +161,22 @@ class MatchPhaserGrid extends jMatch3.Grid {
                 y: 0
             }}
         };
+        var result = [];
         for (var axis of ['x','y']) {
             this.parent.directions = _directions[axis]
 
             var matches = this.getMatches();
             this.parent.directions = save_directions;
             if (matches) {
-                for (var i in matches) {
-                    var match = matches[i];
-                    callback(match, match[0].object.type);
-                }
+                result = [].concat(result,matches);
+                //for (var i in matches) {
+                //    var match = matches[i];
+                //    callback(match, match[0].object.type);
+                //}
             }
 
         }
+        return result;
     };
 
 }
