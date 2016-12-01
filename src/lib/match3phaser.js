@@ -92,7 +92,7 @@ class MatchPhaserGrid extends jMatch3.Grid {
             return new Promise((resolve,reject) => {
                 let t = this.game.add.tween(
                     piece.object.image
-                ).to(target,this.fall_speed);
+                    ).to(target,this.fall_speed,Phaser.Easing.Linear.None);
                 t.frameBased = false;
                 t.onComplete.add(()=>{
                     piece.object.image.events.onInputDown.removeAll();
