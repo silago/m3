@@ -7,6 +7,7 @@ class MatchPhaserGrid extends jMatch3.Grid {
         this.game = game;
         this.options = options;
         this.info = options.info;
+        this.can_move = true;
         this.stack = [];
         this.score = 0;
         this.label = this.game.add.text((this.info.sprites.x)*(2+options.width), options.height*this.info.sprites.y/2, '0', {
@@ -17,9 +18,9 @@ class MatchPhaserGrid extends jMatch3.Grid {
     }
 
     init() {
-        this.movePieces(this.initPieces(),['y']).then(() => {
-              return this.fallPieces();
-        });
+        this.movePieces(this.initPieces(),['y'])
+            .then(() => {return this.fallPieces()})
+            .then(() => {alert(this.can_move);this.can_move=true;});
     }
    
     updateHud() {
@@ -31,6 +32,7 @@ class MatchPhaserGrid extends jMatch3.Grid {
         }
     }
     fallPieces() {
+        this.can_move  = false;
         return new Promise((resolve,reject)=>{
            var updated = false;
                 this.getAxisMatches().forEach((m)=>{
@@ -51,12 +53,14 @@ class MatchPhaserGrid extends jMatch3.Grid {
                     });
                });
            } else {
+               this.can_move = true;
                resolve();
            }
         });
     }
 
     swap(i) {
+       if (!this.can_move) return;
        this.stack.push(i);
        if (this.stack.length!=2) {
          return;
@@ -68,7 +72,6 @@ class MatchPhaserGrid extends jMatch3.Grid {
        this.swapPieces(this.stack[0],this.stack[1]);
            this.movePieces(this.stack,['x','y'])
                .then(() => {return this.fallPieces()})
-               .then(() => grid.initPieces());
        this.stack = [];
     }
 
