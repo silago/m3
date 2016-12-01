@@ -1,7 +1,7 @@
 class MatchPhaserGrid extends jMatch3.Grid {
     constructor(game,options) {
         super(options);
-        this.fall_speed = 500;
+        this.fall_speed = 200;
         this.parent = jMatch3.Grid;
         this.types = options.types;
         this.game = game;
